@@ -65,28 +65,52 @@ func init() {
 			{Name: "pass", Help: "Your login password.", Required: true, IsPassword: true},
 			{Name: "domain", Help: "Optional domain for login."},
 			{
-				Name:     "language", Help: "Language for messages (en/zh).", Default:  "en", Advanced: true,
+				Name: "language", Help: "Language for messages (en/zh).", Default: "en", Advanced: true,
 				Examples: []fs.OptionExample{{Value: "en", Help: "English"}, {Value: "zh", Help: "中文"}},
 			},
 		},
 	})
 	
-	// --- 设置多语言消息 (此处省略具体内容以保持简洁，实际代码与上一版相同) ---
-	message.SetString(language.English, MsgActionMkdir, "mkdir"); message.SetString(language.Chinese, MsgActionMkdir, "创建目录")
-	// ... 所有其他翻译条目 ...
-	message.SetString(language.English, MsgDebugUnknownItem, "Found unknown item type '%s' for item '%s'")
-	message.SetString(language.Chinese, MsgDebugUnknownItem, "发现未知项目类型 '%s'，项目名 '%s'")
+	// --- 设置多语言消息 ---
+	message.SetString(language.English, MsgActionMkdir, "mkdir"); message.SetString(language.English, MsgActionDelete, "delete"); message.SetString(language.English, MsgActionRename, "rename")
+	message.SetString(language.English, MsgActionMove, "move"); message.SetString(language.English, MsgActionCopy, "copy"); message.SetString(language.English, MsgActionUpload, "upload")
+	message.SetString(language.English, MsgActionDownload, "download"); message.SetString(language.English, MsgErrParseOptions, "Failed to parse options")
+	message.SetString(language.English, MsgErrCreateLoginRequest, "Failed to create login request"); message.SetString(language.English, MsgErrLoginRequest, "Login request failed")
+	message.SetString(language.English, MsgErrLoginStatus, "Login failed: unexpected status code %s"); message.SetString(language.English, MsgErrDecodeLoginResponse, "Failed to decode login response")
+	message.SetString(language.English, MsgErrTokenNotFound, "Login successful but no token was returned"); message.SetString(language.English, MsgErrQueryRoot, "Failed to query root directory")
+	message.SetString(language.English, MsgErrFindParentDir, "Could not find parent directory for '%s'"); message.SetString(language.English, MsgErrFindSrcDir, "Operation failed, could not find source directory '%s'")
+	message.SetString(language.English, MsgErrFindDstDir, "Operation failed, could not find destination directory '%s'"); message.SetString(language.English, MsgErrMarshalRequest, "Failed to marshal request body for %s")
+	message.SetString(language.English, MsgErrCreateRequest, "Failed to create %s request"); message.SetString(language.English, MsgErrRequestFailed, "%s request failed")
+	message.SetString(language.English, MsgErrAPIStatus, "%s failed, API returned status: %s"); message.SetString(language.English, MsgErrDecodeResponse, "Failed to decode %s response")
+	message.SetString(language.English, MsgErrIDNotFoundInResponse, "%s successful but no ID found in response"); message.SetString(language.English, MsgErrSrcObjectType, "Source object type invalid")
+	message.SetString(language.English, MsgErrDirNotEmpty, "Directory is not empty"); message.SetString(language.English, MsgErrCantPurgeRoot, "Can't purge root directory")
+	message.SetString(language.English, MsgErrDownloadStatus, "Download failed: unexpected status %s"); message.SetString(language.English, MsgErrUploadStatus, "Upload failed, status: %s")
+	message.SetString(language.English, MsgDebugRename, "Detected folder rename operation: '%s' -> '%s'"); message.SetString(language.English, MsgDebugMove, "Detected move operation: '%s' -> '%s'")
+	message.SetString(language.English, MsgDebugRangeSupport, "Server supports range requests, starting chunked download."); message.SetString(language.English, MsgDebugRangeUnsupported, "Server does not support range requests, returned full file. Rclone will handle the required chunk.")
+	message.SetString(language.English, MsgDebugFullDownload, "Starting full file download."); message.SetString(language.English, MsgDebugUnknownItem, "Found unknown item type '%s' for item '%s'")
+	
+	message.SetString(language.Chinese, MsgActionMkdir, "创建目录"); message.SetString(language.Chinese, MsgActionDelete, "删除"); message.SetString(language.Chinese, MsgActionRename, "重命名")
+	message.SetString(language.Chinese, MsgActionMove, "移动"); message.SetString(language.Chinese, MsgActionCopy, "复制"); message.SetString(language.Chinese, MsgActionUpload, "上传")
+	message.SetString(language.Chinese, MsgActionDownload, "下载"); message.SetString(language.Chinese, MsgErrParseOptions, "解析配置失败")
+	message.SetString(language.Chinese, MsgErrCreateLoginRequest, "创建登录请求失败"); message.SetString(language.Chinese, MsgErrLoginRequest, "登录请求失败")
+	message.SetString(language.Chinese, MsgErrLoginStatus, "登录失败：非预期的状态码 %s"); message.SetString(language.Chinese, MsgErrDecodeLoginResponse, "解析登录响应失败")
+	message.SetString(language.Chinese, MsgErrTokenNotFound, "登录成功但未返回Token"); message.SetString(language.Chinese, MsgErrQueryRoot, "查询根目录失败")
+	message.SetString(language.Chinese, MsgErrFindParentDir, "找不到父目录 '%s'"); message.SetString(language.Chinese, MsgErrFindSrcDir, "操作失败，找不到源目录 '%s'")
+	message.SetString(language.Chinese, MsgErrFindDstDir, "操作失败，找不到目标目录 '%s'"); message.SetString(language.Chinese, MsgErrMarshalRequest, "序列化 %s 请求体失败")
+	message.SetString(language.Chinese, MsgErrCreateRequest, "创建 %s 请求失败"); message.SetString(language.Chinese, MsgErrRequestFailed, "%s 请求失败")
+	message.SetString(language.Chinese, MsgErrAPIStatus, "%s 失败，API返回状态码: %s"); message.SetString(language.Chinese, MsgErrDecodeResponse, "解析 %s 响应失败")
+	message.SetString(language.Chinese, MsgErrIDNotFoundInResponse, "%s 成功但响应中未找到新ID"); message.SetString(language.Chinese, MsgErrSrcObjectType, "源对象类型错误")
+	message.SetString(language.Chinese, MsgErrDirNotEmpty, "目录非空"); message.SetString(language.Chinese, MsgErrCantPurgeRoot, "不允许清除根目录")
+	message.SetString(language.Chinese, MsgErrDownloadStatus, "下载失败：非预期的状态码 %s"); message.SetString(language.Chinese, MsgErrUploadStatus, "上传失败，状态码: %s")
+	message.SetString(language.Chinese, MsgDebugRename, "检测到文件夹重命名操作: '%s' -> '%s'"); message.SetString(language.Chinese, MsgDebugMove, "检测到移动操作: '%s' -> '%s'")
+	message.SetString(language.Chinese, MsgDebugRangeSupport, "服务器支持范围请求，开始分段下载。"); message.SetString(language.Chinese, MsgDebugRangeUnsupported, "服务器不支持范围请求，已返回整个文件。Rclone将在客户端处理所需分段。")
+	message.SetString(language.Chinese, MsgDebugFullDownload, "开始完整文件下载。"); message.SetString(language.Chinese, MsgDebugUnknownItem, "发现未知项目类型 '%s'，项目名 '%s'")
 }
 
 // Options 定义了配置参数。
 type Options struct {
 	Server   string `config:"server"`; Username string `config:"user"`; Password string `config:"pass"`
 	Domain   string `config:"domain,optional"`; Language string `config:"language,optional"`
-}
-
-// Add 方法用于让 Options 结构体满足新的配置解析接口
-func (opt *Options) Add(m configmap.Mapper) {
-	fs.AddFlagsFromOptions(m, "main", opt)
 }
 
 // Fs 代表远程系统。
@@ -114,8 +138,8 @@ type listResponse struct {
 // NewFs 是后端的入口点。
 func NewFs(ctx context.Context, name, root string, m configmap.Mapper) (fs.Fs, error) {
 	opt := new(Options); p := message.NewPrinter(language.English) 
-	opt.Add(m) // 修正的配置解析方法
-	if errs := m.Errors(); errs != nil { return nil, errors.Wrap(errs, p.Sprintf(MsgErrParseOptions)) }
+	err := fs.DecodeOptions(m, &opt)
+	if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrParseOptions)) }
 	p = message.NewPrinter(language.Make(opt.Language))
 	credBody := map[string]string{"username": opt.Username, "password": opt.Password}
 	if opt.Domain != "" { credBody["domain"] = opt.Domain }
@@ -124,7 +148,7 @@ func NewFs(ctx context.Context, name, root string, m configmap.Mapper) (fs.Fs, e
 	req, err := http.NewRequestWithContext(ctx, "POST", loginURL, bytes.NewReader(credBodyBytes))
 	if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrCreateLoginRequest)) }
 	req.Header.Set("Content-Type", "application/json"); req.Header.Set("Accept", "application/json")
-	res, err := fshttp.NewClient(ctx).Do(req) // 修正的 HTTP 客户端获取
+	res, err := fshttp.NewClient(ctx).Do(req)
 	if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrLoginRequest)) }
 	defer fs.CheckClose(res.Body, &err)
 	if res.StatusCode != http.StatusOK { return nil, errors.New(p.Sprintf(MsgErrLoginStatus, res.Status)) }
@@ -133,7 +157,7 @@ func NewFs(ctx context.Context, name, root string, m configmap.Mapper) (fs.Fs, e
 	if authResponse.Token == "" { return nil, errors.New(p.Sprintf(MsgErrTokenNotFound)) }
 	f := &Fs{
 		name: name, root: root, opt: *opt, token: authResponse.Token,
-		pacer:   pacer.New(), // 修正的 Pacer 初始化
+		pacer:   pacer.New(),
 		cache:   make(map[string]string),
 		printer: p,
 	}
@@ -154,7 +178,9 @@ func (f *Fs) Root() string { return f.root }
 func (f *Fs) String() string { return fmt.Sprintf("Agilent Secure Storage at %s", f.opt.Server) }
 // Features 返回此后端支持的可选特性。
 func (f *Fs) Features() *fs.Features { return f.features }
-// Hashes 返回此后端支持的哈希类型。由于API不支持，返回空集合。
+// Precision 返回后端支持的文件修改时间精度。
+func (f *Fs) Precision() time.Duration { return time.Nanosecond }
+// Hashes 返回此后端支持的哈希类型。
 func (f *Fs) Hashes() hash.Set { return hash.NewHashSet() }
 
 // List 列出指定目录中的对象和目录。
@@ -209,7 +235,7 @@ func (f *Fs) Mkdir(ctx context.Context, dir string) error {
 	if err != nil { return errors.Wrap(err, f.printer.Sprintf(MsgErrRequestFailed, action)) }
 	defer fs.CheckClose(resp.Body, &err)
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK { return errors.New(f.printer.Sprintf(MsgErrAPIStatus, action, resp.Status)) }
-	fs.Cache.Purge(parentDir)
+	fs.GetDirCache(ctx).Purge(parentDir)
 	var result struct{ ID string `json:"id"` }
 	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil && result.ID != "" {
 		f.cacheLock.Lock(); f.cache[dir] = result.ID; f.cacheLock.Unlock()
@@ -223,7 +249,7 @@ func (f *Fs) Rmdir(ctx context.Context, dir string) error {
 	if len(entries) != 0 { return errors.New(f.printer.Sprintf(MsgErrDirNotEmpty)) }
 	itemID, err := f.pathToID(ctx, dir); if err != nil { return err }
 	if err = f.deleteItemByID(ctx, itemID, "Rclone rmdir"); err != nil { return err }
-	parentDir, _ := path.Split(dir); fs.Cache.Purge(path.Clean(parentDir))
+	parentDir, _ := path.Split(dir); fs.GetDirCache(ctx).Purge(path.Clean(parentDir))
 	f.cacheLock.Lock(); delete(f.cache, dir); f.cacheLock.Unlock()
 	return nil
 }
@@ -234,7 +260,7 @@ func (f *Fs) Purge(ctx context.Context, dir string) error {
 	itemID, err := f.pathToID(ctx, dir)
 	if err != nil { if err == fs.ErrorDirNotFound { return nil }; return err }
 	if err = f.deleteItemByID(ctx, itemID, "Rclone purge"); err != nil { return err }
-	parentDir, _ := path.Split(dir); fs.Cache.Purge(path.Clean(parentDir))
+	parentDir, _ := path.Split(dir); fs.GetDirCache(ctx).Purge(path.Clean(parentDir))
 	f.cacheLock.Lock()
 	for k := range f.cache { if strings.HasPrefix(k, dir) { delete(f.cache, k) } }
 	f.cacheLock.Unlock()
@@ -266,7 +292,7 @@ func (f *Fs) DirMove(ctx context.Context, srcFS fs.Fs, srcRemote string) (err er
 		if err != nil { return errors.Wrapf(err, f.printer.Sprintf(MsgErrFindDstDir, f.root)) }
 		if _, err = src.moveOrCopyItem(ctx, srcID, dstParentID, "move"); err != nil { return err }
 	}
-	fs.Cache.Purge(path.Clean(srcParent)); fs.Cache.Purge(path.Clean(dstParent))
+	fs.GetDirCache(ctx).Purge(path.Clean(srcParent)); fs.GetDirCache(ctx).Purge(path.Clean(dstParent))
 	src.cacheLock.Lock()
 	for k := range src.cache { if strings.HasPrefix(k, srcRemote) { delete(src.cache, k) } }
 	src.cacheLock.Unlock()
@@ -350,7 +376,6 @@ func (o *Object) Fs() fs.Info { return o.fs }
 func (o *Object) String() string { return o.remote }
 func (o *Object) Storable() bool { return true }
 func (o *Object) SetModTime(ctx context.Context, modTime time.Time) error { return fs.ErrorNotImplemented }
-// Hash returns the requested hash of a file
 func (o *Object) Hash(ctx context.Context, ty hash.Type) (string, error) { return "", hash.ErrUnsupported }
 
 func (o *Object) Open(ctx context.Context, options ...fs.OpenOption) (in io.ReadCloser, err error) {
@@ -388,14 +413,14 @@ func (o *Object) Update(ctx context.Context, in io.Reader, src fs.ObjectInfo, op
 	if err != nil { return errors.Wrap(err, o.fs.printer.Sprintf(MsgErrRequestFailed, action)) }
 	defer fs.CheckClose(resp.Body, &err)
 	if resp.StatusCode != http.StatusCreated { return errors.New(o.fs.printer.Sprintf(MsgErrUploadStatus, resp.Status)) }
-	fs.Cache.Purge(parentDir)
+	fs.GetDirCache(ctx).Purge(parentDir)
 	o.size = src.Size(); o.modTime = src.ModTime(ctx)
 	return nil
 }
 
 func (o *Object) Remove(ctx context.Context) error {
 	err := o.fs.deleteItemByID(ctx, o.id, "Rclone delete"); if err != nil { return err }
-	parentDir, _ := path.Split(o.remote); fs.Cache.Purge(path.Clean(parentDir))
+	parentDir, _ := path.Split(o.remote); fs.GetDirCache(ctx).Purge(path.Clean(parentDir))
 	return nil
 }
 
@@ -408,7 +433,7 @@ func (o *Object) Move(ctx context.Context, srcObj fs.Object, dstRemote string) (
 	newID, err := o.fs.moveOrCopyItem(ctx, src.id, dstParentID, "move")
 	if err != nil { return nil, err }
 	newObj := &Object{fs: o.fs, remote: dstRemote, id: newID, modTime: src.modTime, size: src.size}
-	fs.Cache.Purge(path.Clean(srcParent)); fs.Cache.Purge(path.Clean(dstParent))
+	fs.GetDirCache(ctx).Purge(path.Clean(srcParent)); fs.GetDirCache(ctx).Purge(path.Clean(dstParent))
 	o.fs.cacheLock.Lock(); delete(o.fs.cache, src.remote); o.fs.cache[newObj.remote] = newID; o.fs.cacheLock.Unlock()
 	return newObj, nil
 }
@@ -420,6 +445,6 @@ func (o *Object) Copy(ctx context.Context, srcObj fs.Object, dstRemote string) (
 	if err != nil { return nil, errors.Wrapf(err, o.fs.printer.Sprintf(MsgErrFindDstDir, dstParent)) }
 	newID, err := o.fs.moveOrCopyItem(ctx, src.id, dstParentID, "copy")
 	if err != nil { return nil, err }
-	fs.Cache.Purge(path.Clean(dstParent))
+	fs.GetDirCache(ctx).Purge(path.Clean(dstParent))
 	return &Object{fs: o.fs, remote: dstRemote, id: newID, modTime: time.Now(), size: src.size}, nil
 }
