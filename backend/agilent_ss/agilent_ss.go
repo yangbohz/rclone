@@ -123,6 +123,29 @@ type Fs struct {
     // 移除 dirCache 字段，使用其他方式处理目录缓存
 }
 
+// listResponse 定义了从服务器返回的列表响应结构
+type listResponse struct {
+    Nodes []node `json:"nodes"`
+}
+
+// node 定义了列表中的单个项目
+type node struct {
+    ID                  string `json:"id"`
+    Name                string `json:"name"`
+    Kind                string `json:"kind"`
+    Size                int64  `json:"size"`
+    ContentModifiedDate string `json:"contentModifiedDate"`
+}
+
+// Object describes an Agilent Secure Storage object
+type Object struct {
+    fs      *Fs       // what this object is part of
+    remote  string    // The remote path
+    id      string    // ID of the object
+    modTime time.Time // The modified time of the object if known
+    size    int64     // Size of the object
+}
+
 // 修改 NewFs 函数中的配置解码部分
 func NewFs(ctx context.Context, name, root string, m configmap.Mapper) (fs.Fs, error) {
     opt := new(Options); p := message.NewPrinter(language.English) 
