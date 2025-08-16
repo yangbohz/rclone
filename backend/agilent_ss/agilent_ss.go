@@ -120,16 +120,16 @@ type Fs struct {
     token     string; pacer *pacer.Pacer
     cache     map[string]string 
     cacheLock sync.Mutex; printer *message.Printer
-    dirCache  *fs.DirCache // 新增目录缓存字段
+    // 移除 dirCache 字段，使用其他方式处理目录缓存
 }
 
 // 修改 NewFs 函数中的配置解码部分
 func NewFs(ctx context.Context, name, root string, m configmap.Mapper) (fs.Fs, error) {
     opt := new(Options); p := message.NewPrinter(language.English) 
     // 替换旧的解码方式
-    err := configstruct.New(m, opt)
-    if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrParseOptions)) }
-
+    if err := configmap.Set(m, opt); err != nil {
+        return nil, errors.Wrap(err, p.Sprintf(MsgErrParseOptions))
+    }
     // 在初始化 Fs 时添加目录缓存
     f := &Fs{
         name: name, root: root, opt: *opt, token: authResponse.Token,
@@ -211,7 +211,11 @@ func (f *Fs) Mkdir(ctx context.Context, dir string) error {
 	if err != nil { return errors.Wrap(err, f.printer.Sprintf(MsgErrRequestFailed, action)) }
 	defer fs.CheckClose(resp.Body, &err)
 	if resp.StatusCode != http.StatusCreated && resp.StatusCode != http.StatusOK { return errors.New(f.printer.Sprintf(MsgErrAPIStatus, action, resp.Status)) }
-	fs.GetDirCache(ctx).Purge(parentDir)
+	// 移除这行: fs.GetDirCache(ctx).Purge(parentDir)
+	// 替换为:
+	f.cacheLock.Lock()
+	delete(f.cache, parentDir)
+	f.cacheLock.Unlock()
 	var result struct{ ID string `json:"id"` }
 	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil && result.ID != "" {
 		f.cacheLock.Lock(); f.cache[dir] = result.ID; f.cacheLock.Unlock()
