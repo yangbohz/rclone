@@ -114,60 +114,36 @@ type Options struct {
 }
 
 // Fs 代表远程系统。
+// 在 Fs 结构体添加目录缓存字段
 type Fs struct {
-	name      string; root string; opt Options; features  *fs.Features
-	token     string; pacer *pacer.Pacer
-	cache     map[string]string // 使用标准的map作为缓存
-	cacheLock sync.Mutex; printer *message.Printer
+    name      string; root string; opt Options; features  *fs.Features
+    token     string; pacer *pacer.Pacer
+    cache     map[string]string 
+    cacheLock sync.Mutex; printer *message.Printer
+    dirCache  *fs.DirCache // 新增目录缓存字段
 }
 
-// Object 描述一个文件。
-type Object struct {
-	fs *Fs; remote string; id string; modTime time.Time; size int64
-}
-
-// node 和 listResponse 结构体是顶层定义，以解决作用域问题
-type node struct {
-	ID                  string `json:"id"`; Name string `json:"name"`; Kind string `json:"kind"`
-	Size                int64  `json:"size"`; ContentModifiedDate string `json:"contentModifiedDate"`
-}
-type listResponse struct {
-	Nodes []node `json:"nodes"`
-}
-
-// NewFs 是后端的入口点。
+// 修改 NewFs 函数中的配置解码部分
 func NewFs(ctx context.Context, name, root string, m configmap.Mapper) (fs.Fs, error) {
-	opt := new(Options); p := message.NewPrinter(language.English) 
-	err := fs.DecodeOptions(m, &opt)
-	if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrParseOptions)) }
-	p = message.NewPrinter(language.Make(opt.Language))
-	credBody := map[string]string{"username": opt.Username, "password": opt.Password}
-	if opt.Domain != "" { credBody["domain"] = opt.Domain }
-	credBodyBytes, _ := json.Marshal(credBody)
-	loginURL := fmt.Sprintf("https://%s/openlab/sdms/authentication/v1.0/login", opt.Server)
-	req, err := http.NewRequestWithContext(ctx, "POST", loginURL, bytes.NewReader(credBodyBytes))
-	if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrCreateLoginRequest)) }
-	req.Header.Set("Content-Type", "application/json"); req.Header.Set("Accept", "application/json")
-	res, err := fshttp.NewClient(ctx).Do(req)
-	if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrLoginRequest)) }
-	defer fs.CheckClose(res.Body, &err)
-	if res.StatusCode != http.StatusOK { return nil, errors.New(p.Sprintf(MsgErrLoginStatus, res.Status)) }
-	var authResponse struct { Token string `json:"token"` }
-	if err := json.NewDecoder(res.Body).Decode(&authResponse); err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrDecodeLoginResponse)) }
-	if authResponse.Token == "" { return nil, errors.New(p.Sprintf(MsgErrTokenNotFound)) }
-	f := &Fs{
-		name: name, root: root, opt: *opt, token: authResponse.Token,
-		pacer:   pacer.New(),
-		cache:   make(map[string]string),
-		printer: p,
-	}
-	f.features = (&fs.Features{
-		CanHaveEmptyDirectories: true,
-	}).Fill(ctx, f)
-	if root != "" {
-		if _, err = f.pathToID(ctx, ""); err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrQueryRoot)) }
-	}
-	return f, nil
+    opt := new(Options); p := message.NewPrinter(language.English) 
+    // 替换旧的解码方式
+    err := configstruct.New(m, opt)
+    if err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrParseOptions)) }
+
+    // 在初始化 Fs 时添加目录缓存
+    f := &Fs{
+        name: name, root: root, opt: *opt, token: authResponse.Token,
+        pacer:   pacer.New(),
+        cache:   make(map[string]string),
+        printer: p,
+    }
+    f.features = (&fs.Features{
+        CanHaveEmptyDirectories: true,
+    }).Fill(ctx, f)
+    if root != "" {
+        if _, err = f.pathToID(ctx, ""); err != nil { return nil, errors.Wrap(err, p.Sprintf(MsgErrQueryRoot)) }
+    }
+    return f, nil
 }
 
 // Name 返回此远程配置的名称。
